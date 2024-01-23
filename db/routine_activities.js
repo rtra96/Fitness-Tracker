@@ -1,6 +1,14 @@
 const client = require('./client');
 const util = require('./util');
 
+async function getAllRoutineActivities() {
+  try {
+    const { rows } = await client.query('SELECT * FROM routine_activities');
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
 async function getRoutineActivityById(id){
   try {
     const {rows: [routineActivity]} = await client.query(`
@@ -128,4 +136,5 @@ module.exports = {
   updateRoutineActivity,
   destroyRoutineActivity,
   canEditRoutineActivity,
+  getAllRoutineActivities
 };
