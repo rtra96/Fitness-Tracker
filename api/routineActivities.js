@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { updateRoutineActivity, canEditRoutineActivity, destroyRoutineActivity, getRoutineActivityById, getAllRoutineActivities } = require('../db');
+const { updateRoutineActivity, canEditRoutineActivity, destroyRoutineActivity, getRoutineActivityById, getAllRoutineActivities, createRoutineActivity } = require('../db');
 const client = require('../db/client');
 const { requireUser, requiredNotSent } = require('./utils')
 
@@ -29,6 +29,25 @@ router.get('/:routineActivityId', async (req, res, next) => {
     } else {
       res.send(routineActivity);
     }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST /api/routine_activities
+router.post('/', requireUser, requiredNotSent({ requiredParams: ['count', 'duration'], atLeastOne: true }), async (req, res, next) => {
+  try {
+    const { routineId, activityId, count, duration } = req.body;
+
+    // Create a new routine activity associated with the authenticated user
+    const newRoutineActivity = await createRoutineActivity({
+      routineId,
+      activityId,
+      count,
+      duration,
+    });
+
+    res.status(201).send(newRoutineActivity);
   } catch (error) {
     next(error);
   }

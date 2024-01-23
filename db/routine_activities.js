@@ -128,7 +128,18 @@ async function canEditRoutineActivity(routineActivityId, userId) {
     return routineFromRoutineActivity.creatorId === userId;
 }
 
-module.exports = {
+const createRoutineActivity = async ({ routineId, count, duration, activityId }) =>{
+  try {
+    const {rows: [activity]} = await client.query(`
+      INSERT INTO routine_activities("routineId",count, duration, "activityId") VALUES ($1, $2, $3, $4)
+      RETURNING *
+    `, [routineId, count, duration, activityId]);
+    return activity;
+  } catch (error) {
+    throw error;
+  }};
+
+  module.exports = {
   getRoutineActivityById,
   addActivityToRoutine,
   getAllRoutineActivities,
@@ -136,5 +147,6 @@ module.exports = {
   updateRoutineActivity,
   destroyRoutineActivity,
   canEditRoutineActivity,
-  getAllRoutineActivities
+  getAllRoutineActivities,
+  createRoutineActivity
 };
