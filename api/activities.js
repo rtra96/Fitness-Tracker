@@ -3,6 +3,26 @@ const router = express.Router();
 const { getAllActivities, getActivityById, getActivityByName, createActivity, updateActivity, getPublicRoutinesByActivity } = require('../db');
 const { requireUser, requiredNotSent } = require('./utils')
 
+
+// GET /api/activities/:activityId
+router.get('/:activityId', async (req, res, next) => {
+  try {
+    const { activityId } = req.params;
+    const activity = await getActivityById(activityId);
+
+    if (!activity) {
+      next({
+        name: 'NotFound',
+        message: `No activity found by ID ${activityId}`,
+      });
+    } else {
+      res.send(activity);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 // GET /api/activities/:activityId/routines
 router.get('/:activityId/routines', async (req, res, next) => {
   try {
@@ -29,6 +49,7 @@ router.get('/', async (req, res, next) => {
     next(error)
   }
 })
+
 
 // POST /api/activities
 router.post('/', requireUser, requiredNotSent({requiredParams: ['name', 'description']}), async (req, res, next) => {
